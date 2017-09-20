@@ -1,0 +1,29 @@
+<launch>
+
+  <!-- arguments you can pass this launch file, for example rviz:=true -->
+  <arg name="rviz" default="false"/>
+
+  <!-- load the URDF into the ROS parameter server -->
+  <param name="robot_description"
+    command="$(find xacro)/xacro --inorder '$(find artemis_description)/urdf/artemis.xacro'" />
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+	respawn="false" output="screen">
+    <remap from="/joint_states" to="/artemis/joint_states" />
+  </node>
+
+  <group if="$(arg rviz)">
+
+    <!-- show in rviz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find artemis_description)/launch/artemis.rviz"/>
+
+    <!-- send fake joint values -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+      <param name="use_gui" value="TRUE"/>
+      <remap from="/joint_states" to="/artemis/joint_states" />
+    </node>
+
+  </group>
+
+</launch>

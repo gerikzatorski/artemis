@@ -1,0 +1,17 @@
+<launch>
+
+  <!-- arguments you can pass this launch file, for example rviz:=true -->
+  <arg name="port" default="/dev/ttyACM0" />
+  <arg name="rviz" default="false" />
+
+  <include file="$(find artemis_description)/launch/artemis_description.launch">
+    <arg name="rviz" value="$(arg rviz)" />
+  </include>
+  <!-- ros_control artemis launch file -->
+  <include file="$(find artemis_control)/launch/artemis_control.launch" />
+  
+  <!-- open communication with arduino   -->
+  <node name="rosserial" pkg="rosserial_python" type="serial_node.py"
+    respawn="false" output="screen" args="$(arg port)" />
+
+</launch>

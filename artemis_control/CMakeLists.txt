@@ -8,8 +8,34 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
+  INCLUDE_DIRS
+    include
   CATKIN_DEPENDS
     roscpp
     hardware_interface
     controller_manager
+)
+
+###########
+## Build ##
+###########
+
+include_directories(
+  include/
+  ${catkin_INCLUDE_DIRS}
+)
+
+add_library(artemis_control
+  src/artemis_hw_interface.cpp
+)
+target_link_libraries(artemis_control
+  ${catkin_LIBRARIES}
+)
+
+add_executable(artemis_node
+  src/artemis_node.cpp
+)
+target_link_libraries(artemis_node
+  artemis_control
+  ${catkin_LIBRARIES}
 )
