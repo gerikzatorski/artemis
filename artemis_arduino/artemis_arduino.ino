@@ -13,6 +13,7 @@
 #include <ros.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/String.h>
+#include <std_srvs/Trigger.h>
 
 // actuator libraries
 #include <AccelStepper.h>
@@ -26,6 +27,10 @@
 #define RELAY_FLYWHEELS_PIN 10
 #define RELAY_BELT_PIN 11
 
+// Function Prototypes
+void artemis_cb(const std_msgs::Float64MultiArray& cmd_msg);
+void artemis_fire(const std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response);
+
 // zero position is set at construction time
 AccelStepper stepper_pan(AccelStepper::DRIVER, STEPPER_PAN_STEP, STEPPER_PAN_DIR);
 AccelStepper stepper_tilt(AccelStepper::DRIVER, STEPPER_TILT_STEP, STEPPER_TILT_DIR);
@@ -34,12 +39,8 @@ SimpleRelay relay_flywheel(RELAY_FLYWHEELS_PIN);
 SimpleRelay relay_belt(RELAY_BELT_PIN);
 
 ros::NodeHandle nh;
-
-// Function Prototypes
-void artemis_cb(const std_msgs::Float64MultiArray& cmd_msg);
-
-// Subscribe to Pan/Tilt Position Commands
 ros::Subscriber<std_msgs::Float64MultiArray> sub("/artemis/joint_position_controller/command", &artemis_cb);
+ros::ServiceServer<std_srvs::TriggerRequest, std_srvs::TriggerResponse> service("/artemis/blaster/command", &artemis_fire);
 
 void setup()
 {
@@ -48,6 +49,7 @@ void setup()
   // ROS setup stuff
   nh.initNode();
   nh.subscribe(sub);
+  nh.advertiseService(service);
 
   // configure stepper motors
   stepper_pan.setMaxSpeed(30.0);
@@ -58,6 +60,9 @@ void setup()
 
 void loop()
 {
+  /* Debugging */
+  /* nh.loginfo(info); */
+
   nh.spinOnce();
   delay(5);
 }
@@ -75,5 +80,24 @@ void artemis_cb(const std_msgs::Float64MultiArray& cmd_msg)
 
   stepper_tilt.run();
   stepper_pan.run();
-  digitalWrite(13, HIGH-digitalRead(13));  // toggle led  
+}
+
+void artemis_fire(const std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response)
+{
+
+  nh.loginfo("Firing Artemis!");
+  
+  /* start flywheel */
+  relay_flywheel.NO();
+  delay(300);
+    
+  relay_belt.NO();
+  delay(300);
+  relay_belt.NC();
+
+  delay(100);
+  relay_flywheel.NO();
+
+  response.success = true;
+  response.message = "0";
 }

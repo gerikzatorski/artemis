@@ -13,6 +13,7 @@
 #include <hardware_interface/robot_hw.h>
 
 #include <std_msgs/Float64MultiArray.h>
+#include <std_srvs/Trigger.h>
 
 namespace artemis_control
 {

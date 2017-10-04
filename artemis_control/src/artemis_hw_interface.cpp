@@ -36,8 +36,11 @@ namespace artemis_control
 
   void ArtemisHWInterface::write(ros::Duration &elapsed_time)
   {
+    /* set internal state */
     pantilt_msg.data[0] = cmd[0];
     pantilt_msg.data[1] = cmd[1];
+
+    /* publish pan/tilt values */
     pub_joint_command.publish(pantilt_msg);
   }
 
