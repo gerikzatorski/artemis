@@ -24,6 +24,4 @@ rostopic pub -1 artemis/joint_position_controller/command std_msgs/Float64MultiA
 
 ## TODO
 
-* add ROS service for shooting
 * CAD to urdf conversion
-* Update ROS CMakeLists.txt and package.xml files
