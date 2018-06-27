@@ -6,12 +6,22 @@
 * artemis_control
 * artemis_gazebo
 
+## Building
+
+Navigate to the catkin workspace then
+
+```sh
+rosdep install -y --from-paths src --ignore-src --rosdistro kinetic
+catkin config --extend /opt/ros/kinetic --cmake-args -DCMAKE_BUILD_TYPE=Release
+catkin build
+```
+
 ## Testing
 
 ### display in rviz
 
 ```
-roslaunch artemis_description artemis_description.launch
+roslaunch artemis_description artemis_description.launch rviz:=true
 ```
 
 ### run control
